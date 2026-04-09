@@ -1,28 +1,31 @@
 class Solution:
     def islandsAndTreasure(self, grid: List[List[int]]) -> None:
         ROWS, COLS = len(grid), len(grid[0])
-        q = collections.deque()
         visit = set()
+        q = collections.deque()
+
+        def modCell(r, c):
+            if (r < 0 or c < 0 or r >= ROWS or c >= COLS or
+                (r, c) in visit or
+                grid[r][c] == -1
+            ):
+                return
+            visit.add((r, c))
+            q.append((r, c))
 
         for r in range(ROWS):
             for c in range(COLS):
                 if grid[r][c] == 0:
                     q.append((r, c))
+                    visit.add((r, c))
 
-        direction = [[-1, 0], [1, 0], [0, -1], [0, 1]]
         step = 0
         while q:
             for i in range(len(q)):
-                row, col = q.popleft()
-                grid[row][col] = step
-                for dr, dc in direction:
-                    r, c = row + dr, col + dc
-                    if (r in range(ROWS) and
-                        c in range(COLS) and
-                        (r, c) not in visit and
-                        grid[r][c] != -1 and
-                        grid[r][c] != 0
-                    ):
-                        visit.add((r, c))
-                        q.append((r, c))
+                r, c = q.popleft()
+                grid[r][c] = step
+                modCell(r-1, c)
+                modCell(r+1, c)
+                modCell(r, c-1)
+                modCell(r, c+1)
             step += 1
